@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-
+import matplotlib.pyplot as plt
 import pandas as pd
 import csv
 import plotly.graph_objects as go
@@ -116,15 +116,9 @@ user_input = st.sidebar.text_input("Enter Product name", "")
 
 
 
-
-
-
-
-
 home = st.sidebar.button("**Home 🏠**")
-result = st.sidebar.button("**Summary**")
 st.sidebar.header("Analysis:")
-team1_button = st.sidebar.button("**frequently searched products**")
+team1_button = st.sidebar.button("**Frequently searched products**")
 team2_button = st.sidebar.button("**Top 25 Product on rating**")
 team3_button = st.sidebar.button("**Sentiment Analysis**")
 team4_button = st.sidebar.button("**Review summary**")
@@ -136,9 +130,6 @@ team5_button = st.sidebar.button("**Evidence Summary**")
 if 'selected_team' not in st.session_state:
         st.session_state.selected_team = 0
 
-
-    
-        
     
 if home:
     st.session_state.selected_team=0
@@ -174,13 +165,11 @@ with col1:
 
     
     if st.session_state.selected_team==0:
-        st.markdown("<p style='text-align: left; font-size: 24px;'><b>Competitor Analysis from Online Sources📊 :</b></p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: left; font-size: 24px;'><b>🎯Strategic Decision Making with Social Data::</b></p>", unsafe_allow_html=True)
         
 
 
     if st.session_state.selected_team==1:
-
-        
         st.header("Analysis📊:")
         st.subheader("most searched products:") 
         prompt_part1 = [ 
@@ -192,9 +181,11 @@ with col1:
         df1 = pd.read_csv(file_like_object, sep='|', skiprows=0, skipinitialspace=True)
         st.write(df1)
 
+
+
+
     if st.session_state.selected_team==2:
-    
-        st.header("Analysis:")
+
         st.subheader("Top 25 Product based on rating and review :") 
         prompt_part2 = [ 
     "Discover the top(25)-searched healthcare and medical devices, specifically focusing on blood pressure monitoring devices, across all e-commerce platforms. Extract details such as category,sub_category product name, brand, price, rating, review count, country of origin (India), and best sellers rank for each product."
@@ -202,8 +193,6 @@ with col1:
  
         response2 = model.generate_content(prompt_part2)
         response0 = response2.text
-
-
 
         # Convert the response text into a file-like object for pandas
         file_like_object = StringIO(response0)
@@ -235,18 +224,34 @@ with col1:
 
         # Keep 'Rating' column as float
         df['Rating'] = df['Rating'].astype(float)
-
-
         st.write(df)
-       
 
+        mean_ratings = df.groupby('Brand')['Rating'].mean().reset_index()
+        mean_ratings_sorted = mean_ratings.sort_values(by='Rating', ascending=False)
 
+    # Plotting the bar graph for mean ratings
+        plt.figure(figsize=(10, 6))
+        bars = plt.bar(mean_ratings_sorted['Brand'], mean_ratings_sorted['Rating'], color='skyblue')
+
+        # Adding labels and title
+        plt.xlabel('Brand')
+        plt.ylabel('Mean Rating')
+        plt.title('Mean Rating of Blood Pressure Monitoring Devices by Brand')
+
+        # Rotating x-axis labels for better readability
+        plt.xticks(rotation=90)
+
+        # Annotate each bar with its rating (rotated 90 degrees)
+        for bar in bars:
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width() / 2, height, '%.2f' % height, ha='center', va='bottom', rotation=0)
+        
+        # Display the plot
+        st.pyplot(plt)
 
     if st.session_state.selected_team==3:
         
-        st.header("Analysis:")
         st.subheader("Sentiment Analysis")         
-        
         prompt_part3 = [
         """Discover the top(20) serched blood pressure monitoring devices, across all e-commerce platforms in india. and give  the positive and negative sentiments by percentage of each products drill-down in what is the most comman positive reviews and what is the most comman nagative reviews for each product by product.
         output like be productname:
@@ -261,14 +266,9 @@ with col1:
         response3 = model.generate_content(prompt_part3)
         st.write(response3.text)
         
-       
-
-
-
+    
         
     if st.session_state.selected_team==4:
-
-        st.header("Analysis:")
         st.subheader("Review Summary and Recomidations Analysis") 
 
         prompt_part4=[
@@ -280,7 +280,6 @@ with col1:
     
     if st.session_state.selected_team==5:
         st.header("Evidence Summary💡:")
-        
         prompt_part5=[
         """Develop a product improvement strategy for each product based on competitors' top-performing products in the list. The strategy should focus on enhancing the features or addressing shortcomings identified in the competitor products to maintain or improve competitiveness. where the category is healthcare and subcategory is blood pressure monitor device
        """]
@@ -328,10 +327,10 @@ a:hover, a:active {
     <p>Powered By <a style='color:black;' href="https://healtharkinsights.com/analytics-demo/" target="_blank">Team-5©</a></p>
 </div>
 """
-st.markdown(footer, unsafe_allow_html=True)
-if st.session_state.selected_team==8:
+# st.markdown(footer, unsafe_allow_html=True)
+# if st.session_state.selected_team==8:
         
-        st.header("Result Summary📖")
+#         st.header("Result Summary📖")
 
        
        
