@@ -43,28 +43,10 @@ generation_config = {
 }
  
 
-safety_settings = [
-  {
-    "category": "HARM_CATEGORY_HARASSMENT",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  },
-  {
-    "category": "HARM_CATEGORY_HATE_SPEECH",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  },
-  {
-    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  },
-  {
-    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-    "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-  }
-]
 
 model = genai.GenerativeModel(model_name="gemini-pro",
-                              generation_config=generation_config,
-                              safety_settings=safety_settings)
+                              generation_config=generation_config
+                              )
  
 
 
@@ -121,8 +103,8 @@ st.sidebar.header("Analysis:")
 team1_button = st.sidebar.button("**Frequently searched products**")
 team2_button = st.sidebar.button("**Top 25 Product on rating**")
 team3_button = st.sidebar.button("**Sentiment Analysis**")
-team4_button = st.sidebar.button("**Review summary**")
-team5_button = st.sidebar.button("**Evidence Summary**")
+team4_button = st.sidebar.button("**Product Enchancement Strategy**")
+team5_button = st.sidebar.button("**OverAll Product Strategy**")
 # team6_button = st.sidebar.button("**1234**")
 # team7_button = st.sidebar.button("**Team7**") 
 
@@ -165,10 +147,17 @@ with col1:
 
     
     if st.session_state.selected_team==0:
-        st.markdown("<p style='text-align: left; font-size: 24px;'><b>🎯Strategic Decision Making with Social Data::</b></p>", unsafe_allow_html=True)
+        # st.markdown("<p style='text-al    ign: left; font-size: 24px;'><b>🎯Product Insights::</b></p>", unsafe_allow_html=True)
+        st.subheader("Wlecome to our Platform!!")
+        st.write("**Comprehensive Reports**: Gain access to detailed information on top products across various categories, including prices, reviews, and best seller rankings.")
+        st.write("")
         
-
-
+        st.write("**Insightful Analyses**: Understand customer sentiments with our analyses, which include")
+        st.write("**Overall Review Summary**: Get a detailed overview of customer opinions distilled into key insights, aiding informed decision-making.")
+        st.write("**Sentiment Analysis**: Dive deeper into customer sentiments, uncovering emotional nuances and satisfaction levels.")
+        st.write("")
+        st.write("**Actionable Strategies**: Elevate your products with our detailed improvement strategies aimed at meeting and surpassing customer expectations.")
+        
     if st.session_state.selected_team==1:
         st.header("Analysis📊:")
         st.subheader("most searched products:") 
@@ -177,9 +166,7 @@ with col1:
    ]
         response1 = model.generate_content(prompt_part1)
         content_text = response1.text
-        file_like_object = StringIO(content_text)
-        df1 = pd.read_csv(file_like_object, sep='|', skiprows=0, skipinitialspace=True)
-        st.write(df1)
+        st.write(content_text)
 
 
 
@@ -209,10 +196,9 @@ with col1:
         # Remove leading/trailing whitespaces from each entry in the DataFrame
         df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 
-        #droping the last column bcoz it contain nan value
-        # df = df.drop(['Unnamed: 0','Unnamed: 10'], axis=1)
+        
+        df = df.drop(['Unnamed: 0','Unnamed: 11'], axis=1)
 
-        # df.columns
 
         # removing 1st row from df bcoz of nan value
         df = df[1:]
@@ -253,13 +239,23 @@ with col1:
         
         st.subheader("Sentiment Analysis")         
         prompt_part3 = [
-        """Discover the top(20) serched blood pressure monitoring devices, across all e-commerce platforms in india. and give  the positive and negative sentiments by percentage of each products drill-down in what is the most comman positive reviews and what is the most comman nagative reviews for each product by product.
+        """Discover the top(20) serched blood pressure monitoring devices, across all e-commerce platforms in india. and give  the positive and negative sentiments by percentage of each products drill-down in what is the most comman positive reviews and what is the most comman nagative reviews,and OverAll Customer Review Summary for each product by product.
         output like be productname:
-                positive :
-                reviwes
+        
+               
 
-                nagative:
-                reviews 
+                provide a customer review summary in 3-4 lines of each product basis on the customer reveiw also:
+
+                output should be 
+
+                review summary:
+
+                positive(percentage):
+
+                negative(percentage):
+                
+
+            
                                                                                                                                                                                                                                                                                                                                                             
         """]
 
@@ -269,19 +265,28 @@ with col1:
     
         
     if st.session_state.selected_team==4:
-        st.subheader("Review Summary and Recomidations Analysis") 
+        st.subheader("Product Enhancement Strategy") 
 
-        prompt_part4=[
-            """""Discover the top(20)-searched healthcare and medical devices, specifically focusing on blood pressure monitoring devices, across all e-commerce platforms in india.provide a customer review summary in 2-3 lines provide  points of each product basis on the customer reveiw.""
-        """]
+        prompt_part4 = [ 
+    "Develop a product improvement strategy for each product based on competitors' top-performing products in the list. The strategy should focus on enhancing the features or addressing shortcomings identified in the competitor products to maintain or improve competitiveness. where the category is healthcare and subcategory is blood pressure monitor device"
+   ]
+ 
+ 
         response4 = model.generate_content(prompt_part4)
-        st.write(response4.text)
+
+# Access the 'text' attribute of the response object
+        response_text04 = response4.text
+
+        st.write(response_text04)
+
+
+       
         
     
     if st.session_state.selected_team==5:
-        st.header("Evidence Summary💡:")
+        st.subheader("Overall Product Strategy:")
         prompt_part5=[
-        """Develop a product improvement strategy for each product based on competitors' top-performing products in the list. The strategy should focus on enhancing the features or addressing shortcomings identified in the competitor products to maintain or improve competitiveness. where the category is healthcare and subcategory is blood pressure monitor device
+       """ Develop a product enhancement strategy for blood pressure monitoring devices based on insights from competitors and customer preferences. Address key aspects such as accuracy and reliability, user interface and design, connectivity and data management, as well as additional features and value-adds. Ensure to include relevant insights, strategies, and percentages for each aspect.
        """]
         response5=model.generate_content(prompt_part5)
         st.write(response5.text)
